@@ -6,6 +6,7 @@ function toCamelCase(str: string): string {
 // Generate AI SDK tool definitions
 export function generateToolsCode(
 	serverName: string,
+	// biome-ignore lint/suspicious/noExplicitAny: for library use
 	toolsJson: any[],
 ): string {
 	const toolName = toCamelCase(`${serverName}Tools`);
@@ -19,34 +20,35 @@ export function generateToolsCode(
 		output += `    description: '${tool.description.replace(/'/g, "\\'")}',\n`;
 
 		// Generate parameters section using zod
-		output += `    parameters: `;
+		output += "    parameters: ";
 
 		if (tool.inputSchema) {
 			// Convert JSON Schema to Zod
 			const zodSchema = generateZodSchema(tool.inputSchema);
 			output += zodSchema;
 		} else {
-			output += `z.object({})`;
+			output += "z.object({})";
 		}
 
-		output += `,\n`;
+		output += ",\n";
 
 		// Add execute function
-		output += `    execute: async (params) => {\n`;
-		output += `      // TODO\n`;
-		output += `    }\n`;
+		output += "    execute: async (params) => {\n";
+		output += "      // TODO\n";
+		output += "    }\n";
 
 		// Close tool definition
-		output += `  }),\n`;
+		output += "  }),\n";
 	}
 
 	// Close tools object
-	output += `}\n`;
+	output += "}\n";
 
 	return output;
 }
 
 // Function to generate Zod schema from JSON Schema
+// biome-ignore lint/suspicious/noExplicitAny: for library use
 function generateZodSchema(schema: any): string {
 	if (schema.type === "object") {
 		let output = "z.object({\n";
@@ -59,6 +61,7 @@ function generateZodSchema(schema: any): string {
 			output += `      ${camelCasedProp}: `;
 
 			// Handle property type
+			// biome-ignore lint/suspicious/noExplicitAny: for library use
 			output += generatePropertySchema(propSchema as any);
 
 			// Handle required fields
@@ -77,6 +80,7 @@ function generateZodSchema(schema: any): string {
 }
 
 // Function to generate Zod schema for a property
+// biome-ignore lint/suspicious/noExplicitAny: for library use
 function generatePropertySchema(schema: any): string {
 	if (schema.type === "string") {
 		let output = "z.string()";
@@ -95,7 +99,8 @@ function generatePropertySchema(schema: any): string {
 		}
 
 		return output;
-	} else if (schema.type === "number") {
+	}
+	if (schema.type === "number") {
 		let output = "z.number()";
 
 		// Add description if available
@@ -112,7 +117,8 @@ function generatePropertySchema(schema: any): string {
 		}
 
 		return output;
-	} else if (schema.type === "boolean") {
+	}
+	if (schema.type === "boolean") {
 		let output = "z.boolean()";
 
 		// Add description if available
@@ -121,7 +127,8 @@ function generatePropertySchema(schema: any): string {
 		}
 
 		return output;
-	} else if (schema.type === "array") {
+	}
+	if (schema.type === "array") {
 		let output = `z.array(${generatePropertySchema(schema.items)})`;
 
 		// Add description if available
@@ -130,8 +137,7 @@ function generatePropertySchema(schema: any): string {
 		}
 
 		return output;
-	} else {
-		// Default fallback
-		return "z.any()";
 	}
+	// Default fallback
+	return "z.any()";
 }
