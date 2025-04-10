@@ -16,18 +16,8 @@ const commandStr = await consola.prompt("Enter the sever command", {
 const [command, ...args] = commandStr.split(" ");
 
 const transport = new StdioClientTransport({
-	command: "docker",
-	args: [
-		"run",
-		"-i",
-		"--rm",
-		"-e",
-		"GITHUB_PERSONAL_ACCESS_TOKEN",
-		"ghcr.io/github/github-mcp-server",
-	],
-	env: {
-		GITHUB_PERSONAL_ACCESS_TOKEN: "",
-	},
+	command,
+	args,
 });
 consola.start("Connecting mcp server...");
 const toolStrings = await listTools(transport);
@@ -35,16 +25,14 @@ consola.success("Connected to mcp server!!");
 
 // Generate the code
 consola.start("Generating mcp server tools to AI SDK tools...");
-const toolsCode = generateToolsCode(toolStrings);
+const toolsCode = generateToolsCode(name, toolStrings);
 consola.success("Generated mcp server tools to AI SDK tools!");
 
 // write the stdout of the server to tools.ts
 consola.log("Saving server stdout to tools.ts...");
-writeFileSync("tools.ts", toolStrings.join("\n"));
+writeFileSync("tools.ts", toolsCode);
 consola.success("Server stdout saved to tools.ts");
 
-// Output path (default or specified)
-const outputPath = process.argv[3] || "./tools.ts";
-writeFileSync(outputPath, toolsCode);
+console.log("Generated AI SDK tools in tools.ts");
 
-console.log(`Generated AI SDK tools in ${outputPath}`);
+process.exit(0);
