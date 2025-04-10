@@ -4,7 +4,9 @@ import consola from "consola";
 import { generateToolsCode } from "./generate-tool-code.js";
 import { listTools } from "./mcp.js";
 
-consola.info("======= mcp-aisdk v0.0.1 ========");
+consola.box(
+	"mcp-aisdk v0.0.1\nConvert tools of MPC you connets to AI SDK tools template code.",
+);
 const name = await consola.prompt("Enter the server name ", {
 	placeholder: "my server",
 });
