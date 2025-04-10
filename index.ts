@@ -50,6 +50,9 @@ if (serverConfig === undefined) {
 const transport = new StdioClientTransport({
 	command: serverConfig.command,
 	args: serverConfig.args,
+	env: {
+		...(process.env as Record<string, string>),
+	},
 });
 consola.start("Connecting mcp server...");
 const toolStrings = await listTools(transport);
